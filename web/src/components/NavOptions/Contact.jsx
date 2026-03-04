@@ -25,15 +25,11 @@ export default function Contact() {
                         <div className="contact-emails">
                             <h3>Email Us</h3>
                             <div className="emails-list">
-                                <a href="mailto:jefferus.resuera@cit.edu" className="email-link">
-                                    📧 jefferus.resuera@cit.edu
-                                </a>
+                               
                                 <a href="mailto:junjie.geraldez@cit.edu" className="email-link">
                                     📧 junjie.geraldez@cit.edu
                                 </a>
-                                <a href="mailto:josan.sumarago@cit.edu" className="email-link">
-                                    📧 josan.sumarago@cit.edu
-                                </a>
+                                
                             </div>
                         </div>
                     </section>

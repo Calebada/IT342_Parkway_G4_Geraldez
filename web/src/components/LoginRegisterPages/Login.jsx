@@ -81,7 +81,7 @@ export default function Login() {
         }
 
         const loggedUser = result.user;
-        console.log('Logged in user:', loggedUser);
+        console.log('Logged in user :',  loggedUser);
 
         
         if (loggedUser.role === 'admin') {

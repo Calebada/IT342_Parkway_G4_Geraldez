@@ -2,6 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
+
+
+
 export default function Register() {
     const navigate = useNavigate();
     const { register } = useAuth();
@@ -24,16 +27,18 @@ export default function Register() {
         }));
     };
 
-    const handleSubmit = async (e) => {
+
+
+    const  handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+        if (!formData.firstName  || !formData.lastName || !formData.email || !formData.password) {
             setError('All fields are required');
             return;
         }
 
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.password!==formData.confirmPassword) {
             setError('Passwords do not match');
             return;
         }
@@ -78,6 +83,15 @@ export default function Register() {
                             <i className="bx bx-user"></i>
                         </div>
 
+
+
+
+
+
+
+
+
+
                         <div className="input-box">
                             <input 
                                 type="text" 
@@ -99,6 +113,12 @@ export default function Register() {
                                 value={formData.middleInitial}
                                 onChange={handleChange}
                             />
+
+
+
+
+
+
                             <i className="bx bx-id-card"></i>
                         </div>
 

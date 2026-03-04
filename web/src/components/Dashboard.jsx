@@ -28,7 +28,6 @@ export default function Dashboard() {
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Load user from localStorage
   useEffect(() => {
     const currentUser = localStorage.getItem('currentUser');
     if (currentUser) {

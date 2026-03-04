@@ -46,11 +46,11 @@ public class User {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
     
-    // Default constructor
+   
     public User() {
     }
     
-    // Constructor with all fields
+    
     public User(Long userID, String firstname, String lastname, String email, String password, String role) {
         this.userID = userID;
         this.firstname = firstname;
@@ -60,7 +60,7 @@ public class User {
         this.role = role;
     }
     
-    // Getters and Setters
+  
     public Long getUserID() {
         return userID;
     }

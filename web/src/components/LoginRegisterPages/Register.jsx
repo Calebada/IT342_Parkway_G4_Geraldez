@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import '../../styles/LoginRegister.css';
 
 
 
@@ -63,11 +64,10 @@ export default function Register() {
     };
 
     return (
-        <div>
-            <div className="center-wrapper register-wrapper">
-                <div className="wrapper">
-                    <form onSubmit={handleSubmit}>
-                        <h1>Create an Account!</h1>
+        <div className="register-wrapper">
+            <div className="wrapper">
+                <form onSubmit={handleSubmit}>
+                    <h1>Create an Account!</h1>
 
                         {error && <div className="error-message" style={{ color: '#ff4444', marginBottom: '1rem' }}>{error}</div>}
 
@@ -183,6 +183,5 @@ export default function Register() {
                     </form>
                 </div>
             </div>
-        </div>
     );
 }

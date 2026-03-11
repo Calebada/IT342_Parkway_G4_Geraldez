@@ -1,6 +1,8 @@
 .profile-container {
   min-height: calc(100vh - 80px);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: url('../images/bground.jpg') no-repeat center center;
+  background-size: cover;
+  background-attachment: fixed;
   padding: 2rem;
 }
 

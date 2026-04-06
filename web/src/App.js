@@ -11,6 +11,7 @@ import ParkingLocations from './components/ParkingLocations.jsx';
 import About from './components/NavOptions/About.jsx';
 import Services from './components/NavOptions/Services.jsx';
 import Contact from './components/NavOptions/Contact.jsx';
+import OAuthCallback from './components/OAuthCallback.jsx';
 
 function ProtectedRoute({ children, adminOnly }) {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -34,6 +35,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/oauth-callback" element={<OAuthCallback />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

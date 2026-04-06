@@ -33,9 +33,12 @@ public class User {
     @JsonProperty("email")
     private String email;
     
-    @Column(name = "password", nullable = false, length = 255)
-    @JsonProperty("password")
+    @Column(name = "password", nullable = true, length = 255)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    
+    @Column(name = "auth_provider", length = 20)
+    private String authProvider; // "local" or "google"
     
     @Column(name = "role", length = 20)
     @JsonProperty("role")
@@ -107,6 +110,14 @@ public class User {
     
     public void setRole(String role) {
         this.role = role;
+    }
+    
+    public String getAuthProvider() {
+        return authProvider;
+    }
+    
+    public void setAuthProvider(String authProvider) {
+        this.authProvider = authProvider;
     }
     
     public LocalDateTime getCreatedAt() {

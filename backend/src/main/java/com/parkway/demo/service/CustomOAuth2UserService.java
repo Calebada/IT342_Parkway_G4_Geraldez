@@ -42,6 +42,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             user.setEmail(email);
             user.setFirstname(firstName != null ? firstName : "");
             user.setLastname(lastName != null ? lastName : "");
+            user.setPassword(""); // OAuth users don't have password
             user.setRole("user"); // default role
             user.setAuthProvider("google");
             userRepository.save(user);

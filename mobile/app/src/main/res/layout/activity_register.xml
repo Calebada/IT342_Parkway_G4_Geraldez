@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_light"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Padding top -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <!-- Logo and Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="30dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🚌"
+                    android:textSize="40sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ParkWay"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/cyan"
+                    android:layout_marginStart="10dp" />
+
+            </LinearLayout>
+
+            <!-- White Form Container -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/edit_text_background"
+                android:padding="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="20dp">
+
+                <!-- Title -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Create an Account!"
+                    style="@style/FormTitle" />
+
+                <!-- Error Message -->
+                <TextView
+                    android:id="@+id/tvError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    style="@style/ErrorMessage" />
+
+                <!-- Success Message -->
+                <TextView
+                    android:id="@+id/tvSuccess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    style="@style/SuccessMessage" />
+
+                <!-- Username Input -->
+                <EditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="@string/username_hint"
+                    android:inputType="text"
+                    android:drawableStart="@drawable/ic_user"
+                    android:drawablePadding="10dp"
+                    style="@style/InputBox" />
+
+                <!-- First Name Input -->
+                <EditText
+                    android:id="@+id/etFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="@string/first_name_hint"
+                    android:inputType="text"
+                    android:drawableStart="@drawable/ic_user"
+                    android:drawablePadding="10dp"
+                    style="@style/InputBox" />
+
+                <!-- Last Name Input -->
+                <EditText
+                    android:id="@+id/etLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="@string/last_name_hint"
+                    android:inputType="text"
+                    android:drawableStart="@drawable/ic_user"
+                    android:drawablePadding="10dp"
+                    style="@style/InputBox" />
+
+                <!-- Email Input -->
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="@string/email_hint"
+                    android:inputType="textEmailAddress"
+                    android:drawableStart="@drawable/ic_user"
+                    android:drawablePadding="10dp"
+                    style="@style/InputBox" />
+
+                <!-- Password Input -->
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="@string/password_hint"
+                    android:inputType="textPassword"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="10dp"
+                    style="@style/InputBox" />
+
+                <!-- Confirm Password Input -->
+                <EditText
+                    android:id="@+id/etConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="@string/confirm_password_hint"
+                    android:inputType="textPassword"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="10dp"
+                    style="@style/InputBox" />
+
+                <!-- Register Button -->
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="@string/register_button"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/button_background"
+                    android:layout_marginTop="20dp" />
+
+                <!-- Login Link -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Already have an account? "
+                        android:textSize="14sp"
+                        android:textColor="@color/gray" />
+
+                    <TextView
+                        android:id="@+id/tvLoginLink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Login"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/cyan"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

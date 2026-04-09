@@ -1,0 +1,186 @@
+#!/bin/bash
+# Directory structure for ParkWay Mobile App
+# Generated: April 2026
+
+mobile/
+│
+├── README.md                              # Main project documentation
+├── QUICKSTART.md                          # Step-by-step setup guide
+├── KOTLIN_BEST_PRACTICES.md              # Development patterns & best practices
+├── NETWORK_CONFIG.md                     # Backend URL configuration
+├── PROJECT_SUMMARY.md                    # This session's work summary
+├── .gitignore                            # Git ignore rules
+│
+├── build.gradle                          # Top-level Gradle config
+├── settings.gradle                       # Gradle settings & project structure
+│
+└── app/
+    ├── build.gradle                      # App-level dependencies & build config
+    ├── proguard-rules.pro               # ProGuard/R8 obfuscation rules
+    │
+    ├── src/
+    │   ├── main/
+    │   │   ├── AndroidManifest.xml      # App manifest, permissions, activities
+    │   │   │
+    │   │   ├── java/com/parkway/demo/
+    │   │   │   │
+    │   │   │   ├── activity/            # 4 Activity files
+    │   │   │   │   ├── SplashActivity.kt          # 2-second splash screen
+    │   │   │   │   ├── LoginActivity.kt          # Login screen logic
+    │   │   │   │   ├── RegisterActivity.kt       # Registration logic
+    │   │   │   │   └── DashboardActivity.kt      # Main dashboard
+    │   │   │   │
+    │   │   │   ├── api/                 # 2 API files
+    │   │   │   │   ├── ApiService.kt             # Retrofit service interface
+    │   │   │   │   └── RetrofitClient.kt         # Retrofit client singleton
+    │   │   │   │
+    │   │   │   ├── model/               # 1 Model file
+    │   │   │   │   └── User.kt                   # Data classes (User, LoginRequest, Response)
+    │   │   │   │
+    │   │   │   └── utils/               # 2 Utility files
+    │   │   │       ├── PreferencesManager.kt     # SharedPreferences wrapper
+    │   │   │       └── ValidationUtils.kt       # Input validation functions
+    │   │   │
+    │   │   └── res/                     # Resources
+    │   │       │
+    │   │       ├── layout/              # 4 XML Layout files
+    │   │       │   ├── activity_splash.xml      # Splash screen UI
+    │   │       │   ├── activity_login.xml       # Login screen UI
+    │   │       │   ├── activity_register.xml    # Registration screen UI
+    │   │       │   └── activity_dashboard.xml   # Dashboard UI
+    │   │       │
+    │   │       ├── values/              # 4 Resource files
+    │   │       │   ├── colors.xml               # Color definitions
+    │   │       │   ├── strings.xml              # String resources (i18n ready)
+    │   │       │   ├── styles.xml               # Reusable styles
+    │   │       │   └── attrs.xml                # Custom attributes
+    │   │       │
+    │   │       ├── drawable/            # 6 Vector drawable files
+    │   │       │   ├── ic_app_icon.xml          # App icon
+    │   │       │   ├── ic_user.xml              # User icon
+    │   │       │   ├── ic_lock.xml              # Lock icon
+    │   │       │   ├── ic_logout.xml            # Logout icon
+    │   │       │   ├── button_background.xml    # Primary button style
+    │   │       │   └── edit_text_background.xml # TextField style
+    │   │       │
+    │   │       └── xml/                 # 2 Configuration files
+    │   │           ├── backup_rules.xml         # Data backup config
+    │   │           └── data_extraction_rules.xml # Data extraction config
+    │   │
+    │   └── test/                        # (Structure for future tests)
+    │       └── java/com/parkway/demo/   # Unit tests location
+    │
+    └── .gradle/                         # Gradle cache (auto-generated)
+
+═══════════════════════════════════════════════════════════════
+
+KEY STATISTICS:
+
+📊 File Count:
+  - Kotlin Files:        9 (Activities, API, Models, Utils)
+  - XML Layouts:         4 (Splash, Login, Register, Dashboard)  
+  - XML Resources:       10+ (Colors, Strings, Styles, Drawables)
+  - Config Files:        7 (Gradle, Manifest, Rules)
+  - Documentation:       5 (Markdown guides)
+  ─────────────────────────────────
+  Total:                 35+ files
+
+📝 Code Statistics:
+  - Total Lines:         ~1,900 lines
+  - Kotlin Code:         ~350 lines (activities)
+  - API Layer:           ~150 lines
+  - Utils/Models:        ~200 lines
+  - XML Layouts:         ~600 lines
+  - Resources:           ~400 lines
+  - Config/Build:        ~200 lines
+
+📦 Project Size:
+  - Code Size:           ~250 KB (uncompiled)
+  - Built APK:           ~3-5 MB
+
+═══════════════════════════════════════════════════════════════
+
+QUICK REFERENCE:
+
+🔧 Important Files to Know:
+  - RetrofitClient.kt       → Backend URL configuration
+  - PreferencesManager.kt   → Session management
+  - LoginActivity.kt        → Login flow
+  - RegisterActivity.kt     → Registration flow
+  - AndroidManifest.xml     → App permissions & activities
+
+🎨 Design Files:
+  - colors.xml              → Color scheme
+  - styles.xml              → Reusable UI styles
+  - drawable/ folder        → Icons & shapes
+  - activity_*.xml          → UI layouts
+
+📚 Documentation:
+  - README.md               → Complete documentation
+  - QUICKSTART.md           → Step-by-step setup
+  - KOTLIN_BEST_PRACTICES.md → Development guide
+  - NETWORK_CONFIG.md       → Backend configuration
+
+═══════════════════════════════════════════════════════════════
+
+DIRECTORY TREE (Simplified):
+
+mobile/
+ ├─ Documentation (5 .md files)
+ ├─ build.gradle, settings.gradle
+ └─ app/
+    ├─ build.gradle
+    ├─ proguard-rules.pro
+    └─ src/main/
+       ├─ AndroidManifest.xml
+       ├─ java/com/parkway/demo/
+       │  ├─ activity/ (4 Activities)
+       │  ├─ api/ (2 API files)
+       │  ├─ model/ (1 Model file)
+       │  └─ utils/ (2 Utility files)
+       └─ res/
+          ├─ layout/ (4 XML layouts)
+          ├─ values/ (4 Resource files)
+          ├─ drawable/ (6 Icons)
+          └─ xml/ (2 Config files)
+
+═══════════════════════════════════════════════════════════════
+
+WHAT TO DO NEXT:
+
+1. Open in Android Studio:
+   File → Open → mobile folder
+
+2. Wait for Gradle sync
+
+3. Configure backend (if needed):
+   Edit: app/src/main/java/com/parkway/demo/api/RetrofitClient.kt
+
+4. Build:
+   Build → Make Project
+
+5. Run:
+   Shift + F10 (or click Run button)
+
+6. Test:
+   - Register new user
+   - Login with registered account
+   - See Dashboard
+
+═══════════════════════════════════════════════════════════════
+
+Technology Stack Used:
+✅ Kotlin 100%
+✅ Android XML Layouts
+✅ Retrofit 2
+✅ Gson
+✅ Coroutines
+✅ SharedPreferences
+✅ Material Design 3
+✅ OkHttp with logging
+✅ Gradle 8.1
+
+Min SDK: 24 (Android 7.0)
+Target SDK: 34 (Android 14)
+
+═══════════════════════════════════════════════════════════════

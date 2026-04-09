@@ -40,13 +40,13 @@ public class DTOMapper {
             return null;
         }
         
-        String parkingLotName = booking.getParkingLot() != null ? 
-            booking.getParkingLot().getBusinessName() : null;
+        String parkingLotName = booking.getAdmin() != null ? 
+            booking.getAdmin().getParkingLotName() : null;
         
         return new BookingDTO(
             booking.getBookingId(),
             booking.getUser() != null ? booking.getUser().getUserID() : null,
-            booking.getParkingLot() != null ? booking.getParkingLot().getAdminId() : null,
+            booking.getAdmin() != null ? booking.getAdmin().getAdminId() : null,
             parkingLotName,
             booking.getDateReserved(),
             booking.getTimeIn(),

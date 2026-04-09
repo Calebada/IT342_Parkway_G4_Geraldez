@@ -1,13 +1,14 @@
 package com.parkway.demo.service;
 
-import com.parkway.demo.model.User;
-import com.parkway.demo.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.parkway.demo.model.User;
+import com.parkway.demo.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -26,6 +27,17 @@ public class UserService {
         
         // Hash the password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
+        // Set role to "user" if not already set
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("user");
+        }
+        
+        // Set auth provider to "local" if not already set
+        if (user.getAuthProvider() == null || user.getAuthProvider().isEmpty()) {
+            user.setAuthProvider("local");
+        }
+        
         return userRepository.save(user);
     }
     

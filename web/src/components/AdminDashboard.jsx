@@ -12,7 +12,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [adminUser, setAdminUser] = useState(null);
   const [parkingSlots, setParkingSlots] = useState([]);
-  const [activeSection, setActiveSection] = useState('overview'); // overview | bookings | spaces | reports | profile
+  const [activeSection, setActiveSection] = useState('overview'); // overview | bookings | spaces | profile
   const [bookings, setBookings] = useState([]);
   const [selectedLocationId, setSelectedLocationId] = useState(null);
   const [locationSlots, setLocationSlots] = useState([]); // per-slot status for selected location
@@ -28,6 +28,10 @@ export default function AdminDashboard() {
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [profileError, setProfileError] = useState('');
   const [profileSuccess, setProfileSuccess] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [adminParkingLotId, setAdminParkingLotId] = useState(null);
   const [editData, setEditData] = useState({
     firstname: '',
     lastname: '',
@@ -57,6 +61,33 @@ export default function AdminDashboard() {
     initParkingSlots();
     loadBookings();
   }, []);
+
+  useEffect(() => {
+    const adminRecipientId = adminParkingLotId || selectedLocationId || adminUser?.parkingLotId || adminUser?.id;
+    if (!adminRecipientId) return;
+
+    loadNotifications(adminRecipientId);
+    const intervalId = setInterval(() => {
+      loadNotifications(adminRecipientId);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [adminParkingLotId, selectedLocationId, adminUser?.parkingLotId, adminUser?.id]);
+
+  const syncAdminParkingLotId = (lotId) => {
+    if (!lotId) return;
+
+    setAdminParkingLotId(lotId);
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (!currentUser || !currentUser.id) return;
+
+    if (currentUser.parkingLotId !== lotId) {
+      const updatedUser = { ...currentUser, parkingLotId: lotId };
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      setAdminUser(updatedUser);
+    }
+  };
 
   const initParkingSlots = async () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -100,6 +131,7 @@ export default function AdminDashboard() {
           console.log('Formatted parking slot from stored ID:', formattedSlot);
           console.log('Using capacity:', capacity);
           setParkingSlots([formattedSlot]);
+          syncAdminParkingLotId(formattedSlot.id);
           setSelectedLocationId(formattedSlot.id);
           loadLocationSlotStatuses(formattedSlot.id);
           return;
@@ -159,6 +191,7 @@ export default function AdminDashboard() {
             };
             console.log('Formatted parking slot:', formattedSlot);
             setParkingSlots([formattedSlot]);
+            syncAdminParkingLotId(formattedSlot.id);
             setSelectedLocationId(formattedSlot.id);
             loadLocationSlotStatuses(formattedSlot.id);
             return;
@@ -212,6 +245,7 @@ export default function AdminDashboard() {
         console.log('Formatted parking slot:', formattedSlot);
         console.log('Using capacity:', capacity);
         setParkingSlots([formattedSlot]);
+        syncAdminParkingLotId(formattedSlot.id);
         setSelectedLocationId(formattedSlot.id);
         loadLocationSlotStatuses(formattedSlot.id);
       } else {
@@ -274,6 +308,8 @@ export default function AdminDashboard() {
         setBookings([]);
         return;
       }
+
+      syncAdminParkingLotId(parkingLotId);
       
       console.log('Fetching bookings for parking lot ID:', parkingLotId);
       const bookingsResponse = await fetch(`http://localhost:8080/api/bookings/admin/${parkingLotId}`);
@@ -331,6 +367,65 @@ export default function AdminDashboard() {
       console.error('Error loading bookings:', error);
       setBookings([]);
     }
+  };
+
+  const loadNotifications = async (recipientId) => {
+    if (!recipientId) return;
+
+    try {
+      const [notificationsResponse, unreadResponse] = await Promise.all([
+        fetch(`http://localhost:8080/api/notifications/admin/${recipientId}`),
+        fetch(`http://localhost:8080/api/notifications/admin/${recipientId}/unread-count`)
+      ]);
+
+      if (notificationsResponse.ok) {
+        const data = await notificationsResponse.json();
+        setNotifications(Array.isArray(data) ? data : []);
+      }
+
+      if (unreadResponse.ok) {
+        const data = await unreadResponse.json();
+        setUnreadCount(data.unread_count || 0);
+      }
+    } catch (error) {
+      console.error('Error loading admin notifications:', error);
+    }
+  };
+
+  const markNotificationAsRead = async (notificationId) => {
+    const adminRecipientId = adminUser?.parkingLotId || adminUser?.id;
+    if (!adminRecipientId) return;
+
+    try {
+      await fetch(`http://localhost:8080/api/notifications/admin/${adminRecipientId}/${notificationId}/read`, {
+        method: 'PUT'
+      });
+      await loadNotifications(adminRecipientId);
+      setActiveSection('bookings');
+      setShowNotifications(false);
+      loadBookings();
+    } catch (error) {
+      console.error('Error marking admin notification as read:', error);
+    }
+  };
+
+  const markAllNotificationsAsRead = async () => {
+    const adminRecipientId = adminUser?.parkingLotId || adminUser?.id;
+    if (!adminRecipientId) return;
+
+    try {
+      await fetch(`http://localhost:8080/api/notifications/admin/${adminRecipientId}/read-all`, {
+        method: 'PUT'
+      });
+      await loadNotifications(adminRecipientId);
+    } catch (error) {
+      console.error('Error marking all admin notifications as read:', error);
+    }
+  };
+
+  const formatNotificationTime = (createdAt) => {
+    if (!createdAt) return '';
+    return new Date(createdAt).toLocaleString();
   };
 
   const initializeParkingSlots = async (locationId, capacity) => {
@@ -908,14 +1003,14 @@ export default function AdminDashboard() {
         return;
       }
 
-      try {
-        await fetch(`http://localhost:8080/api/bookings/${bookingId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'confirmed' }),
-        });
-      } catch (backendError) {
-        console.warn('Backend update failed, continuing with local update...', backendError);
+      const confirmResponse = await fetch(`http://localhost:8080/api/bookings/${bookingId}/confirm`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!confirmResponse.ok) {
+        const errorPayload = await confirmResponse.json().catch(() => ({}));
+        throw new Error(errorPayload.message || 'Backend confirmation failed');
       }
       
       if (booking.parking_lot_id) {
@@ -927,39 +1022,14 @@ export default function AdminDashboard() {
         }
       }
 
-      const loc = parkingSlots.find(p => p.id === booking.parking_lot_id);
-      if (loc) {
-        try {
-          const slotsResponse = await fetch(`http://localhost:8080/api/parking-slots/${loc.id}`);
-          if (slotsResponse.ok) {
-            const slots = await slotsResponse.json();
-            const vacantSlot = slots.find(s => (s.status || '').toLowerCase() === 'vacant');
-            
-            if (vacantSlot) {
-              const slotId = vacantSlot.slot_id || vacantSlot.slotId;
-              await fetch(`http://localhost:8080/api/parking-slots/${slotId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'occupied' }),
-              });
-            }
-          }
-        } catch (slotError) {
-          console.error('Failed to update parking slot:', slotError);
-        }
-      }
-
-      const updatedBookings = bookings.map(b => {
-        if ((b.booking_id || b.id) === bookingId) {
-          return { ...b, status: 'confirmed' };
-        }
-        return b;
-      });
-      setBookings(updatedBookings);
-      
-      await initParkingSlots(); 
+      await loadBookings();
+      await initParkingSlots();
       if (booking.parking_lot_id) {
          await loadLocationSlotStatuses(booking.parking_lot_id);
+      }
+      const adminRecipientId = adminParkingLotId || selectedLocationId || adminUser?.parkingLotId || adminUser?.id;
+      if (adminRecipientId) {
+        await loadNotifications(adminRecipientId);
       }
       
       setIsConfirmModalOpen(false);
@@ -1088,10 +1158,6 @@ export default function AdminDashboard() {
             onClick={() => setActiveSection('spaces')}
           >Parking spaces</button>
           <button
-            className={`admin-nav-item ${activeSection === 'reports' ? 'active' : ''}`}
-            onClick={() => setActiveSection('reports')}
-          >Reports</button>
-          <button
             className={`admin-nav-item ${activeSection === 'profile' ? 'active' : ''}`}
             onClick={() => setActiveSection('profile')}
           >Profile</button>
@@ -1107,6 +1173,52 @@ export default function AdminDashboard() {
       <div className="admin-content">
         <header className="admin-topbar">
           <div className="topbar-right">
+            <div className="admin-notification-icon-container">
+              <i
+                className="bx bx-bell admin-notification-icon"
+                onClick={() => setShowNotifications(!showNotifications)}
+              ></i>
+              {unreadCount > 0 && (
+                <span className="admin-notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+              )}
+
+              {showNotifications && (
+                <div className="admin-notifications-dropdown">
+                  <div className="admin-notifications-header">
+                    <h3>Notifications</h3>
+                    {notifications.length > 0 && (
+                      <button className="admin-mark-all-read" onClick={markAllNotificationsAsRead}>
+                        Mark all as read
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="admin-notifications-list">
+                    {notifications.length === 0 ? (
+                      <div className="admin-no-notifications">
+                        <p>No notifications yet.</p>
+                      </div>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.notification_id}
+                          className={`admin-notification-item ${notification.is_read ? '' : 'unread'}`}
+                          onClick={() => markNotificationAsRead(notification.notification_id)}
+                        >
+                          <div className="admin-notification-icon-text">🔔</div>
+                          <div className="admin-notification-content">
+                            <h4>{notification.title}</h4>
+                            <p>{notification.message}</p>
+                            <small>{formatNotificationTime(notification.created_at)}</small>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="admin-user-mini">
               <span>Welcome, {adminUser?.firstname || 'Admin'}</span>
               <span className="role-tag">Admin</span>
@@ -1303,23 +1415,6 @@ export default function AdminDashboard() {
               <div className="legend">
                 <span className="legend-item"><span className="legend-box vacant-box" /> Vacant</span>
                 <span className="legend-item"><span className="legend-box reserved-box" /> Reserved</span>
-              </div>
-            </div>
-          )}
-
-          {activeSection === 'reports' && (
-            <div className="section-block">
-              <h2 className="section-title">Monthly Report ({currentMonthKey})</h2>
-              <div className="report-grid">
-                {monthlyReport.map(r => (
-                  <div key={r.id} className="report-card">
-                    <h3>{r.name}</h3>
-                    <div className="report-line"><span>Bookings:</span> {r.count}</div>
-                    <div className="report-line"><span>Total Revenue:</span> ₱{r.revenue}</div>
-                    <div className="report-line"><span>Avg Duration:</span> {r.avgDuration} hrs</div>
-                    <div className="report-line"><span>Occupancy:</span> {parkingSlots.find(p => p.id === r.id)?.bookedSlots}/{parkingSlots.find(p => p.id === r.id)?.totalSlots}</div>
-                  </div>
-                ))}
               </div>
             </div>
           )}

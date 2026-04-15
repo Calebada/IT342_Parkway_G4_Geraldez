@@ -35,27 +35,27 @@ public class Booking {
     @JsonProperty("slot_id")
     private Long slotId;
     
-    @Column(name = "date_reserved", nullable = false)
+    @Column(name = "date_reserved", nullable = true)
     @JsonProperty("date_reserved")
     private LocalDate dateReserved;
     
-    @Column(name = "time_in", nullable = false)
+    @Column(name = "time_in", nullable = true)
     @JsonProperty("time_in")
     private LocalTime timeIn;
     
-    @Column(name = "time_out", nullable = false)
+    @Column(name = "time_out", nullable = true)
     @JsonProperty("time_out")
     private LocalTime timeOut;
     
-    @Column(name = "vehicle_type", nullable = false, length = 50)
+    @Column(name = "vehicle_type", length = 50)
     @JsonProperty("vehicle_type")
     private String vehicleType;
     
-    @Column(name = "duration", nullable = false)
+    @Column(name = "duration", nullable = true)
     @JsonProperty("duration")
     private Integer duration;
     
-    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "total_price", precision = 10, scale = 2, nullable = true)
     @JsonProperty("total_price")
     private BigDecimal totalPrice;
     

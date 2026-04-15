@@ -93,6 +93,14 @@ public class AdminController {
         return admin.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    // Get Admin by Email
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Admin> getAdminByEmail(@PathVariable("email") String email) {
+        Optional<Admin> admin = adminService.getAdminByEmail(email);
+        return admin.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
     
     // Update Admin
     @PutMapping("/{id}")

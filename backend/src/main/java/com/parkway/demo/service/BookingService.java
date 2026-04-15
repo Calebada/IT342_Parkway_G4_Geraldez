@@ -39,10 +39,12 @@ public class BookingService {
     
     @Autowired
     private com.parkway.demo.repository.VehicleRepository vehicleRepository;
+
+    @Autowired
+    private NotificationService notificationService;
     
     /**
      * Get all bookings for a specific user
-     * Returns empty list if no bookings found (NOT an error)
      */
     public List<BookingDTO> getUserBookings(Long userId) {
         try {
@@ -72,7 +74,7 @@ public class BookingService {
     @Transactional
     public Booking createBooking(BookingRequest request) {
         try {
-            logger.info("Creating booking for user ID: {} at parking lot ID: {}", 
+            logger.info("Creating new booking for user ID: {}, parking lot ID: {}", 
                        request.getUserId(), request.getParkingLotId());
             
             // Validate user exists
@@ -97,55 +99,71 @@ public class BookingService {
             }
             
             if (occupiedSlots >= totalSlots) {
-                throw new RuntimeException("Parking lot is already full. No available slots at this moment.");
+                throw new RuntimeException("No available parking slots at this location");
             }
             
             // Create booking
             Booking booking = new Booking();
             booking.setUser(user);
             booking.setAdmin(admin);
-            booking.setDateReserved(request.getDateReserved());
-            booking.setTimeIn(request.getTimeIn());
-            booking.setTimeOut(request.getTimeOut());
-            booking.setVehicleType(request.getVehicleType());
-            booking.setDuration(request.getDuration());
-            booking.setTotalPrice(request.getTotalPrice());
             booking.setStatus("pending");
+            booking.setVehicleType(request.getVehicleType());
+            
+            // Set defaults for optional fields if not provided
+            if (request.getDateReserved() != null) {
+                booking.setDateReserved(request.getDateReserved());
+            } else {
+                booking.setDateReserved(java.time.LocalDate.now());
+            }
+            
+            if (request.getTimeIn() != null) {
+                booking.setTimeIn(request.getTimeIn());
+            } else {
+                booking.setTimeIn(java.time.LocalTime.of(8, 0)); // Default 08:00
+            }
+            
+            if (request.getTimeOut() != null) {
+                booking.setTimeOut(request.getTimeOut());
+            } else {
+                booking.setTimeOut(java.time.LocalTime.of(18, 0)); // Default 18:00
+            }
+            
+            if (request.getDuration() != null) {
+                booking.setDuration(request.getDuration());
+            } else {
+                booking.setDuration(10); // Default 10 hours
+            }
+            
+            if (request.getTotalPrice() != null) {
+                booking.setTotalPrice(request.getTotalPrice());
+            } else {
+                booking.setTotalPrice(java.math.BigDecimal.ZERO);
+            }
             
             Booking savedBooking = bookingRepository.save(booking);
             logger.info("Booking created successfully with ID: {}", savedBooking.getBookingId());
+            
+            // Create notification for admin
+            try {
+                notificationService.createNotification(
+                        admin.getAdminId(),
+                        "admin",
+                        savedBooking.getBookingId(),
+                        admin.getAdminId(),
+                        "BOOKING_CREATED",
+                        "New Booking Request",
+                        "New booking request from " + user.getFirstname() + " " + user.getLastname()
+                );
+            } catch (Exception notificationError) {
+                logger.error("Failed to create admin notification for booking {}: {}",
+                        savedBooking.getBookingId(), notificationError.getMessage());
+            }
             
             return savedBooking;
             
         } catch (Exception e) {
             logger.error("Error creating booking: {}", e.getMessage(), e);
             throw e;
-        }
-    }
-    
-    /**
-     * Get all bookings for admin's parking lot
-     * Returns empty list if no bookings found
-     */
-    public List<com.parkway.demo.dto.AdminBookingDTO> getAdminBookings(Long adminId) {
-        try {
-            logger.info("Fetching bookings for admin ID: {}", adminId);
-            
-            List<Booking> bookings = bookingRepository.findByAdminIdWithDetails(adminId);
-            
-            if (bookings.isEmpty()) {
-                logger.info("No bookings found for admin ID: {}", adminId);
-            } else {
-                logger.info("Found {} booking(s) for admin ID: {}", bookings.size(), adminId);
-            }
-            
-            return bookings.stream()
-                    .map(this::convertToAdminDTO)
-                    .collect(Collectors.toList());
-                    
-        } catch (Exception e) {
-            logger.error("Error fetching bookings for admin ID {}: {}", adminId, e.getMessage(), e);
-            throw new RuntimeException("Error fetching bookings: " + e.getMessage());
         }
     }
     
@@ -172,13 +190,14 @@ public class BookingService {
                 throw new RuntimeException("User not found for booking");
             }
             
-            // Get vehicle information
+            // Get vehicle information if available
+            // Confirm should still work even if the user has not registered a vehicle record yet
             com.parkway.demo.model.Vehicle vehicle = vehicleRepository.findByUser_UserID(user.getUserID())
-                    .orElseThrow(() -> new RuntimeException("Vehicle not found for user ID: " + user.getUserID()));
+                    .orElse(null);
             
             // Find first vacant slot
             Optional<ParkingSlot> vacantSlotOpt = parkingSlotRepository
-                    .findFirstVacantSlot(booking.getAdmin().getStaffID());
+                    .findFirstByAdmin_AdminIdAndStatusOrderBySlotNumberAsc(booking.getAdmin().getStaffID(), "vacant");
             
             if (!vacantSlotOpt.isPresent()) {
                 throw new RuntimeException("No vacant parking slots available");
@@ -191,25 +210,44 @@ public class BookingService {
             slot.setReserved(true);
             slot.setBookingId(bookingId);
             slot.setUserId(user.getUserID());
-            slot.setVehicleId(vehicle.getVehicleID());
+            slot.setVehicleId(vehicle != null ? vehicle.getVehicleID() : null);
             slot.setUserFirstname(user.getFirstname());
             slot.setUserLastname(user.getLastname());
-            slot.setVehicleType(vehicle.getVehicleType());
-            slot.setVehicleModel(vehicle.getModel());
-            slot.setPlateNumber(vehicle.getPlateNumber());
+            slot.setVehicleType(vehicle != null ? vehicle.getVehicleType() : booking.getVehicleType());
+            slot.setVehicleModel(vehicle != null ? vehicle.getModel() : null);
+            slot.setPlateNumber(vehicle != null ? vehicle.getPlateNumber() : null);
             
             parkingSlotRepository.save(slot);
             logger.info("Assigned parking slot {} to booking {} with user {} and vehicle {}", 
-                       slot.getSlotNumber(), bookingId, user.getFirstname(), vehicle.getPlateNumber());
+                       slot.getSlotNumber(), bookingId, user.getFirstname(), vehicle != null ? vehicle.getPlateNumber() : null);
             
             // Update booking with vehicle ID, slot ID and status
-            booking.setVehicleId(vehicle.getVehicleID());
+            booking.setVehicleId(vehicle != null ? vehicle.getVehicleID() : null);
             booking.setSlotId(slot.getSlotId());
             booking.setStatus("confirmed");
             bookingRepository.save(booking);
+
+            try {
+                String parkingLotName = booking.getAdmin().getParkingLotName() != null
+                        ? booking.getAdmin().getParkingLotName()
+                        : "the selected parking lot";
+
+                notificationService.createNotification(
+                        user.getUserID(),
+                        "user",
+                        booking.getBookingId(),
+                        booking.getAdmin().getAdminId(),
+                        "BOOKING_APPROVED",
+                        "Booking Approved",
+                        "Your booking at " + parkingLotName + " has been approved."
+                );
+            } catch (Exception notificationError) {
+                logger.error("Failed to create user notification for booking {}: {}",
+                        booking.getBookingId(), notificationError.getMessage());
+            }
             
             logger.info("Booking confirmed successfully: {} - vehicle_id={}, slot_id={}", 
-                       bookingId, vehicle.getVehicleID(), slot.getSlotId());
+                       bookingId, vehicle != null ? vehicle.getVehicleID() : null, slot.getSlotId());
             
         } catch (Exception e) {
             logger.error("Error confirming booking {}: {}", bookingId, e.getMessage(), e);
@@ -238,7 +276,6 @@ public class BookingService {
                     });
             }
             
-            // Delete the booking
             bookingRepository.deleteById(bookingId);
             logger.info("Booking deleted successfully: {}", bookingId);
             
@@ -249,7 +286,62 @@ public class BookingService {
     }
     
     /**
-     * Free a parking slot and clear all information
+     * Get all bookings for a specific admin/parking lot
+     */
+    public List<com.parkway.demo.dto.AdminBookingDTO> getAdminBookings(Long adminId) {
+        try {
+            logger.info("Fetching bookings for admin ID: {}", adminId);
+            
+            List<Booking> bookings = bookingRepository.findByAdminIdWithDetails(adminId);
+            
+            if (bookings.isEmpty()) {
+                logger.info("No bookings found for admin ID: {}", adminId);
+            } else {
+                logger.info("Found {} booking(s) for admin ID: {}", bookings.size(), adminId);
+            }
+            
+            return bookings.stream()
+                    .map(this::convertToAdminDTO)
+                    .collect(Collectors.toList());
+                    
+        } catch (Exception e) {
+            logger.error("Error fetching bookings for admin ID {}: {}", adminId, e.getMessage(), e);
+            throw new RuntimeException("Error fetching bookings: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Convert Booking entity to BookingDTO
+     */
+    private BookingDTO convertToDTO(Booking booking) {
+        BookingDTO dto = new BookingDTO();
+        dto.setBookingId(booking.getBookingId());
+        dto.setUserId(booking.getUser() != null ? booking.getUser().getUserID() : null);
+        dto.setParkingLotId(booking.getAdmin() != null ? booking.getAdmin().getAdminId() : null);
+        dto.setParkingLotName(booking.getAdmin() != null ? booking.getAdmin().getParkingLotName() : null);
+        dto.setVehicleType(booking.getVehicleType());
+        dto.setStatus(booking.getStatus());
+        return dto;
+    }
+    
+    /**
+     * Convert Booking entity to AdminBookingDTO with user details
+     */
+    private com.parkway.demo.dto.AdminBookingDTO convertToAdminDTO(Booking booking) {
+        com.parkway.demo.dto.AdminBookingDTO dto = new com.parkway.demo.dto.AdminBookingDTO();
+        dto.setBookingId(booking.getBookingId());
+        dto.setUserId(booking.getUser() != null ? booking.getUser().getUserID() : null);
+        dto.setParkingLotId(booking.getAdmin() != null ? booking.getAdmin().getAdminId() : null);
+        dto.setParkingLotName(booking.getAdmin() != null ? booking.getAdmin().getParkingLotName() : null);
+        dto.setUserFirstname(booking.getUser() != null ? booking.getUser().getFirstname() : null);
+        dto.setUserLastname(booking.getUser() != null ? booking.getUser().getLastname() : null);
+        dto.setVehicleType(booking.getVehicleType());
+        dto.setStatus(booking.getStatus());
+        return dto;
+    }
+    
+    /**
+     * Free a parking slot
      */
     private void freeSlot(ParkingSlot slot) {
         slot.setStatus("vacant");
@@ -263,47 +355,5 @@ public class BookingService {
         slot.setVehicleModel(null);
         slot.setPlateNumber(null);
         parkingSlotRepository.save(slot);
-    }
-    
-    /**
-     * Convert Booking entity to BookingDTO with parking lot name
-     */
-    private BookingDTO convertToDTO(Booking booking) {
-        return new BookingDTO(
-                booking.getBookingId(),
-                booking.getUser().getUserID(),
-                booking.getAdmin().getStaffID(),
-                booking.getAdmin().getParkingLotName(),
-                booking.getDateReserved(),
-                booking.getTimeIn(),
-                booking.getTimeOut(),
-                booking.getVehicleType(),
-                booking.getDuration(),
-                booking.getTotalPrice(),
-                booking.getStatus(),
-                booking.getCreatedAt()
-        );
-    }
-    
-    /**
-     * Convert Booking entity to AdminBookingDTO with user details
-     */
-    private com.parkway.demo.dto.AdminBookingDTO convertToAdminDTO(Booking booking) {
-        return new com.parkway.demo.dto.AdminBookingDTO(
-                booking.getBookingId(),
-                booking.getUser().getUserID(),
-                booking.getAdmin().getStaffID(),
-                booking.getAdmin().getParkingLotName(),
-                booking.getUser().getFirstname(),
-                booking.getUser().getLastname(),
-                booking.getDateReserved(),
-                booking.getTimeIn(),
-                booking.getTimeOut(),
-                booking.getVehicleType(),
-                booking.getDuration(),
-                booking.getTotalPrice(),
-                booking.getStatus(),
-                booking.getCreatedAt()
-        );
     }
 }

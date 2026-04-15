@@ -62,6 +62,8 @@ body {
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 1rem;
+  color: #000;
+  -webkit-text-fill-color: #000;
   transition: all 0.3s;
   outline: none;
 }

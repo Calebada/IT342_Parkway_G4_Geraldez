@@ -16,7 +16,6 @@ export default function Dashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [selectedFilter, setSelectedFilter] = useState('ALL');
   const [showSettings, setShowSettings] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -27,6 +26,9 @@ export default function Dashboard() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const currentUser = localStorage.getItem('currentUser');
@@ -41,6 +43,17 @@ export default function Dashboard() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    loadNotifications(user.id);
+    const intervalId = setInterval(() => {
+      loadNotifications(user.id);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [user?.id]);
 
   const loadUserBookings = async (userId) => {
     try {
@@ -254,18 +267,69 @@ export default function Dashboard() {
     };
   });
 
-  const filteredSlots = slotsWithAvailability.filter(slot => {
-    const matchesSearch = slot.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = selectedFilter === 'ALL' || 
-                         (selectedFilter === 'MOTORCYCLE' && slot.description.toLowerCase().includes('motorcycle')) ||
-                         (selectedFilter === 'CARS' && slot.description.toLowerCase().includes('vehicle'));
-    
-    return matchesSearch && matchesFilter;
-  });
+  const filteredSlots = slotsWithAvailability.filter(slot =>
+    slot.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleBookNow = (slot) => {
     setSelectedSlot(slot);
     setShowBookingModal(true);
+  };
+
+  const loadNotifications = async (userId) => {
+    if (!userId) return;
+
+    try {
+      const [notificationsResponse, unreadResponse] = await Promise.all([
+        fetch(`http://localhost:8080/api/notifications/user/${userId}`),
+        fetch(`http://localhost:8080/api/notifications/user/${userId}/unread-count`)
+      ]);
+
+      if (notificationsResponse.ok) {
+        const data = await notificationsResponse.json();
+        setNotifications(Array.isArray(data) ? data : []);
+      }
+
+      if (unreadResponse.ok) {
+        const data = await unreadResponse.json();
+        setUnreadCount(data.unread_count || 0);
+      }
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+    }
+  };
+
+  const markNotificationAsRead = async (notificationId) => {
+    if (!user?.id) return;
+
+    try {
+      await fetch(`http://localhost:8080/api/notifications/user/${user.id}/${notificationId}/read`, {
+        method: 'PUT'
+      });
+      await loadNotifications(user.id);
+      setShowBookingHistory(true);
+      setShowNotifications(false);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  const markAllNotificationsAsRead = async () => {
+    if (!user?.id) return;
+
+    try {
+      await fetch(`http://localhost:8080/api/notifications/user/${user.id}/read-all`, {
+        method: 'PUT'
+      });
+      await loadNotifications(user.id);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
+  const formatNotificationTime = (createdAt) => {
+    if (!createdAt) return '';
+    return new Date(createdAt).toLocaleString();
   };
 
   return (
@@ -282,6 +346,52 @@ export default function Dashboard() {
           >
             Booking History
           </button>
+
+          <div className="notification-icon-container">
+            <i
+              className="bx bx-bell notification-icon"
+              onClick={() => setShowNotifications(!showNotifications)}
+            ></i>
+            {unreadCount > 0 && (
+              <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+
+            {showNotifications && (
+              <div className="notifications-dropdown">
+                <div className="notifications-header">
+                  <h3>Notifications</h3>
+                  {notifications.length > 0 && (
+                    <button className="mark-all-read" onClick={markAllNotificationsAsRead}>
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
+
+                <div className="notifications-list">
+                  {notifications.length === 0 ? (
+                    <div className="no-notifications">
+                      <p>No notifications yet.</p>
+                    </div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div
+                        key={notification.notification_id}
+                        className={`notification-item ${notification.is_read ? '' : 'unread'}`}
+                        onClick={() => markNotificationAsRead(notification.notification_id)}
+                      >
+                        <div className="notification-icon-text">🔔</div>
+                        <div className="notification-content">
+                          <h4>{notification.title}</h4>
+                          <p>{notification.message}</p>
+                          <small>{formatNotificationTime(notification.created_at)}</small>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="user-info">
             <span className="username">Welcome, {user?.firstname || 'User'}</span>
@@ -351,28 +461,6 @@ export default function Dashboard() {
               <div className="parking-header">
                 <h2>Popular Parking Slot</h2>
                 <p>Available Close by</p>
-              </div>
-
-              {/* Filter Buttons */}
-              <div className="filter-buttons">
-                <button 
-                  className={`filter-btn ${selectedFilter === 'ALL' ? 'active' : ''}`}
-                  onClick={() => setSelectedFilter('ALL')}
-                >
-                  ALL
-                </button>
-                <button 
-                  className={`filter-btn ${selectedFilter === 'MOTORCYCLE' ? 'active' : ''}`}
-                  onClick={() => setSelectedFilter('MOTORCYCLE')}
-                >
-                  MOTORCYCLE
-                </button>
-                <button 
-                  className={`filter-btn ${selectedFilter === 'CARS' ? 'active' : ''}`}
-                  onClick={() => setSelectedFilter('CARS')}
-                >
-                  CARS
-                </button>
               </div>
 
               {/* Search Bar */}

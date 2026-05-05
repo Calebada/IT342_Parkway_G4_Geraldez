@@ -6,6 +6,7 @@ import { BsBusFrontFill } from "react-icons/bs";
 import ConfirmationModal from './ConfirmationModal';
 import AskModal from './AskModal';
 import SuccessModal from './SuccessModal';
+import { API_BASE_URL } from '../services/apiClient';
 
 export default function AdminDashboard() {
   const { logout } = useAuth();
@@ -148,7 +149,7 @@ export default function AdminDashboard() {
       
       if (!response.ok && response.status === 404) {
         console.log('Email lookup failed, trying Method 2: Get all parking lots');
-        response = await fetch('http://localhost:8080/api/admin/parking-lots');
+        response = await fetch('\/api/admin/parking-lots');
         console.log('Method 2 - Get all lots response status:', response.status);
         
         if (response.ok) {
@@ -282,7 +283,7 @@ export default function AdminDashboard() {
         
         if (response.status === 404) {
           console.log('Trying to fetch from all parking lots');
-          response = await fetch('http://localhost:8080/api/admin/parking-lots');
+          response = await fetch('\/api/admin/parking-lots');
           console.log('Fetch all lots response status:', response.status);
           
           if (response.ok) {
@@ -431,7 +432,7 @@ export default function AdminDashboard() {
   const initializeParkingSlots = async (locationId, capacity) => {
     try {
       console.log(`Initializing ${capacity} parking slots for location ${locationId}...`);
-      const response = await fetch('http://localhost:8080/api/parking-slots/initialize', {
+      const response = await fetch('\/api/parking-slots/initialize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -708,7 +709,7 @@ export default function AdminDashboard() {
         if (!updateSuccess) {
           try {
             console.log('Trying /api/admin/parking-lots endpoint...');
-            const allLotsResponse = await fetch('http://localhost:8080/api/admin/parking-lots');
+            const allLotsResponse = await fetch('\/api/admin/parking-lots');
             
             if (allLotsResponse.ok) {
               const allLots = await allLotsResponse.json();
@@ -771,7 +772,7 @@ export default function AdminDashboard() {
               
               const createPromises = [];
               for (let i = currentCount + 1; i <= newCapacity; i++) {
-                const promise = fetch('http://localhost:8080/api/parking-slots', {
+                const promise = fetch('\/api/parking-slots', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
@@ -939,7 +940,7 @@ export default function AdminDashboard() {
     }
 
     try {
-      const loginResponse = await fetch('http://localhost:8080/api/users/login', {
+      const loginResponse = await fetch('\/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1649,3 +1650,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -9,7 +10,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:8080/api/users/login', {
+      const response = await fetch('\/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +50,7 @@ export function AuthProvider({ children }) {
   const register = async (userData) => {
     console.log('Registering user:', userData);
     try {
-      const response = await fetch('http://localhost:8080/api/users/register', {
+      const response = await fetch('\/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +120,7 @@ export function AuthProvider({ children }) {
     console.log('Request body being sent:', requestBody);
     
     try {
-      const response = await fetch('http://localhost:8080/api/admins', {
+      const response = await fetch('\/api/admins', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,3 +163,4 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+

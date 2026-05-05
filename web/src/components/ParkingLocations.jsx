@@ -9,6 +9,8 @@ import ayalaImg from '../images/ayala.jpg';
 import emallImg from '../images/emall.jpg';
 import BookingModal from './BookingModal';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 export default function ParkingLocations() {
   const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -31,7 +33,7 @@ export default function ParkingLocations() {
 
   const fetchParkingLots = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/admin/parking-lots');
+      const response = await fetch('\/api/admin/parking-lots');
       const data = await response.json();
       
       if (response.ok && data.length > 0) {
@@ -178,3 +180,4 @@ export default function ParkingLocations() {
     </>
   );
 }
+

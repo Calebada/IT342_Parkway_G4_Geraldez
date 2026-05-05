@@ -4,6 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { BsBusFrontFill } from 'react-icons/bs';
 import '../../styles/LoginRegister.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -77,7 +79,7 @@ function Login() {
 
                 {/* Google Login Button */}
                 <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                    <a href="http://localhost:8080/oauth2/authorization/google" style={{ textDecoration: 'none' }}>
+                    <a href="\${API_BASE_URL}/oauth2/authorization/google" style={{ textDecoration: 'none' }}>
                         <button
                             type="button"
                             style={{

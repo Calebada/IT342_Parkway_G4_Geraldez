@@ -12,6 +12,8 @@ import ayalaImg from '../images/ayala.jpg';
 import emallImg from '../images/emall.jpg';
 import ConfirmationModal from './ConfirmationModal';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 export default function Dashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -162,7 +164,7 @@ export default function Dashboard() {
   const loadParkingSlots = async () => {
     try {
       console.log('📊 Loading parking lots with occupancy...');
-      const response = await fetch('http://localhost:8080/api/admin/parking-lots');
+      const response = await fetch('\/api/admin/parking-lots');
       const data = await response.json();
       console.log('Parking lots data:', data);
       
@@ -631,3 +633,4 @@ export default function Dashboard() {
     </>
   );
 }
+

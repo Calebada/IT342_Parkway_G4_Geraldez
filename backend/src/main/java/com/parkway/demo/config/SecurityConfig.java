@@ -22,7 +22,12 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.setAllowedOrigins(List.of("http://localhost:3000"));
+                    // Allow both local development and production URLs
+                    corsConfig.setAllowedOrigins(List.of(
+                        "http://localhost:3000",
+                        "http://localhost:3001",
+                        System.getenv("FRONTEND_URL") != null ? System.getenv("FRONTEND_URL") : "https://parkway.onrender.com"
+                    ));
                     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfig.setAllowedHeaders(List.of("*"));
                     corsConfig.setExposedHeaders(List.of("*"));

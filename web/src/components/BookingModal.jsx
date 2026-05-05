@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import '../styles/BookingModal.css';
 import SuccessModal from './SuccessModal';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 export default function BookingModal({ isOpen, onClose, parkingSlot }) {
   const [bookingData, setBookingData] = useState({
     dateReserved: '',
@@ -141,7 +143,7 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
     console.log('Booking payload:', bookingPayload);
 
     try {
-      const response = await fetch('http://localhost:8080/api/bookings', {
+      const response = await fetch('\/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -291,3 +293,4 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
     </div>
   );
 }
+

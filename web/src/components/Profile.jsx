@@ -3,6 +3,8 @@ import '../styles/Profile.css';
 import { useNavigate } from 'react-router-dom';
 import { BsBusFrontFill } from "react-icons/bs";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 export default function Profile() {
    const navigate = useNavigate();
    const [user, setUser] = useState(null);
@@ -88,7 +90,7 @@ export default function Profile() {
     setIsEditing(false);
     
     // TODO: Send update to backend API
-    // await fetch(`http://localhost:8080/api/users/${user.id}`, {
+    // await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
     //   method: 'PUT',
     //   headers: { 'Content-Type': 'application/json' },
     //   body: JSON.stringify(updatedUser)
@@ -126,7 +128,7 @@ export default function Profile() {
       
       // First, verify current password by attempting login
       console.log('Step 1: Verifying current password...');
-      const loginResponse = await fetch('http://localhost:8080/api/users/login', {
+      const loginResponse = await fetch('\/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -368,3 +370,4 @@ export default function Profile() {
      </>
    );
 }
+

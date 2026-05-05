@@ -3,6 +3,7 @@ import '../styles/ParkingLocations.css';
 import { useNavigate } from 'react-router-dom';
 import { BsBusFrontFill } from "react-icons/bs";
 import smcityImg from '../images/smcity.jpg';
+import { API_BASE_URL } from '../services/apiClient';
 import smmaboloImg from '../images/smmabolo.jpg';
 import itparkImg from '../images/itpark.jpeg';
 import ayalaImg from '../images/ayala.jpg';
@@ -31,7 +32,7 @@ export default function ParkingLocations() {
 
   const fetchParkingLots = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/admin/parking-lots');
+      const response = await fetch(`${API_BASE_URL}/api/admin/parking-lots`);
       const data = await response.json();
       
       if (response.ok && data.length > 0) {
@@ -43,7 +44,7 @@ export default function ParkingLocations() {
             console.log(`Fetching occupancy for ${lot.parking_lot_name} (admin_id: ${lotId})`);
             
             try {
-              const slotsResponse = await fetch(`http://localhost:8080/api/parking-slots/${lotId}`);
+              const slotsResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${lotId}`);
               if (slotsResponse.ok) {
                 const slots = await slotsResponse.json();
                 if (Array.isArray(slots)) {

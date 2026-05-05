@@ -1,5 +1,9 @@
 import React, { createContext, useState, useContext } from 'react';
+<<<<<<< Updated upstream
 import { authAPI, API_BASE_URL } from '../services/apiClient';
+=======
+import { API_BASE_URL } from '../services/apiClient';
+>>>>>>> Stashed changes
 
 const AuthContext = createContext();
 
@@ -10,7 +14,26 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
+<<<<<<< Updated upstream
       const data = await authAPI.login(email, password);
+=======
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Invalid email or password' };
+      }
+>>>>>>> Stashed changes
 
   
       const userObj = {
@@ -35,12 +58,33 @@ export function AuthProvider({ children }) {
   const register = async (userData) => {
     console.log('Registering user:', userData);
     try {
+<<<<<<< Updated upstream
       const data = await authAPI.register(
         userData.firstname,
         userData.lastname,
         userData.email,
         userData.password
       );
+=======
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstname: userData.firstname,
+          lastname: userData.lastname,
+          email: userData.email,
+          password: userData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Registration failed' };
+      }
+>>>>>>> Stashed changes
 
       return { success: true, message: 'Registration successful' };
     } catch (error) {
@@ -139,3 +183,5 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
+

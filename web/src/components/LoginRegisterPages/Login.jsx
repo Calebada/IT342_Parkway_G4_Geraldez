@@ -78,7 +78,11 @@ function Login() {
 
                 {/* Google Login Button */}
                 <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+<<<<<<< Updated upstream
                     <a href={`${API_BASE_URL}/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
+=======
+                    <a href="`${API_BASE_URL}/oauth2/authorization/google" style={{ textDecoration: 'none' }}>
+>>>>>>> Stashed changes
                         <button
                             type="button"
                             style={{
@@ -118,3 +122,7 @@ function Login() {
 }
 
 export default Login;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

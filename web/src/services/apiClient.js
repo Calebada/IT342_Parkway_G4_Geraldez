@@ -252,10 +252,12 @@ export const vehicleAPI = {
   }
 };
 
-export default {
+const API = {
   authAPI,
   bookingAPI,
   parkingLotAPI,
   parkingSlotAPI,
   vehicleAPI
 };
+
+export default API;

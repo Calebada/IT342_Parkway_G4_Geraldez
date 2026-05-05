@@ -6,7 +6,6 @@ import { BsBusFrontFill } from "react-icons/bs";
 import ConfirmationModal from './ConfirmationModal';
 import AskModal from './AskModal';
 import SuccessModal from './SuccessModal';
-import { API_BASE_URL } from '../services/apiClient';
 
 export default function AdminDashboard() {
   const { logout } = useAuth();

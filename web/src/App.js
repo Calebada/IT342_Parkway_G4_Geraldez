@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import NavBar from './components/NavBar/NavBar.jsx';
 import Login from './components/LoginRegisterPages/Login.jsx';
 import Register from './components/LoginRegisterPages/Register.jsx';

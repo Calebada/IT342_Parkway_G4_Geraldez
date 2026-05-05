@@ -11,11 +11,8 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
     timeOut: '',
     vehicleType: ''
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
   const [parkingAvailable, setParkingAvailable] = useState(true);
-  const [occupancy, setOccupancy] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {

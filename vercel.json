@@ -1,0 +1,17 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "web/build",
+  "env": {
+    "REACT_APP_API_URL": "@react_app_api_url"
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://parkway-backend.onrender.com/api/:path*"
+    },
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

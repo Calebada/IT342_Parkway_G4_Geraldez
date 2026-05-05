@@ -3,11 +3,10 @@ import '../styles/AdminDashboard.css';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { BsBusFrontFill } from "react-icons/bs";
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 import ConfirmationModal from './ConfirmationModal';
 import AskModal from './AskModal';
 import SuccessModal from './SuccessModal';
+import { API_BASE_URL } from '../services/apiClient';
 
 export default function AdminDashboard() {
   const { logout } = useAuth();

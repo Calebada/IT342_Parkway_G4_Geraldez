@@ -89,10 +89,7 @@ export default function Profile() {
     setIsEditing(false);
     
     // TODO: Send update to backend API
-<<<<<<< Updated upstream
     // await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
-=======
-    // await fetch(``${API_BASE_URL}/api/users/${user.id}`, {
 >>>>>>> Stashed changes
     //   method: 'PUT',
     //   headers: { 'Content-Type': 'application/json' },
@@ -127,14 +124,11 @@ export default function Profile() {
 
     try {
       console.log('Attempting to change password for user:', user.id);
-<<<<<<< Updated upstream
       console.log('API endpoint:', `${API_BASE_URL}/api/users/${user.id}/password`);
       
       // First, verify current password by attempting login
       console.log('Step 1: Verifying current password...');
       const loginResponse = await fetch(`${API_BASE_URL}/api/users/login`, {
-=======
-      console.log('API endpoint:', ``${API_BASE_URL}/api/users/${user.id}/password`);
       
       // First, verify current password by attempting login
       console.log('Step 1: Verifying current password...');
@@ -158,11 +152,7 @@ export default function Profile() {
       
       // Now update the password in backend
       console.log('Step 2: Updating password in database...');
-<<<<<<< Updated upstream
       const updateResponse = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
-=======
-      const updateResponse = await fetch(``${API_BASE_URL}/api/users/${user.id}`, {
->>>>>>> Stashed changes
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -385,5 +375,6 @@ export default function Profile() {
      </>
    );
 }
+
 
 

@@ -59,11 +59,7 @@ export default function Dashboard() {
 
   const loadUserBookings = async (userId) => {
     try {
-<<<<<<< Updated upstream
       const response = await fetch(`${API_BASE_URL}/api/bookings/user/${userId}`);
-=======
-      const response = await fetch(``${API_BASE_URL}/api/bookings/user/${userId}`);
->>>>>>> Stashed changes
       if (response.ok) {
         const data = await response.json();
         
@@ -121,11 +117,7 @@ export default function Dashboard() {
     setIsDeleting(true);
 
     try {
-<<<<<<< Updated upstream
       const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingToDelete}`, {
-=======
-      const response = await fetch(``${API_BASE_URL}/api/bookings/${bookingToDelete}`, {
->>>>>>> Stashed changes
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -172,11 +164,7 @@ export default function Dashboard() {
   const loadParkingSlots = async () => {
     try {
       console.log('📊 Loading parking lots with occupancy...');
-<<<<<<< Updated upstream
       const response = await fetch('${API_BASE_URL}/api/admin/parking-lots');
-=======
-      const response = await fetch(\\/api/admin/parking-lots');
->>>>>>> Stashed changes
       const data = await response.json();
       console.log('Parking lots data:', data);
       
@@ -190,11 +178,7 @@ export default function Dashboard() {
             console.log(`📊 Checking occupancy for "${lot.parking_lot_name}" (admin_id: ${lotId})`);
             
             try {
-<<<<<<< Updated upstream
               const slotsUrl = `${API_BASE_URL}/api/parking-slots/${lotId}`;
-=======
-              const slotsUrl = ``${API_BASE_URL}/api/parking-slots/${lotId}`;
->>>>>>> Stashed changes
               console.log(`Fetching slots from: ${slotsUrl}`);
               
               const slotsResponse = await fetch(slotsUrl);
@@ -299,13 +283,8 @@ export default function Dashboard() {
 
     try {
       const [notificationsResponse, unreadResponse] = await Promise.all([
-<<<<<<< Updated upstream
         fetch(`${API_BASE_URL}/api/notifications/user/${userId}`),
         fetch(`${API_BASE_URL}/api/notifications/user/${userId}/unread-count`)
-=======
-        fetch(``${API_BASE_URL}/api/notifications/user/${userId}`),
-        fetch(``${API_BASE_URL}/api/notifications/user/${userId}/unread-count`)
->>>>>>> Stashed changes
       ]);
 
       if (notificationsResponse.ok) {
@@ -326,11 +305,7 @@ export default function Dashboard() {
     if (!user?.id) return;
 
     try {
-<<<<<<< Updated upstream
       await fetch(`${API_BASE_URL}/api/notifications/user/${user.id}/${notificationId}/read`, {
-=======
-      await fetch(``${API_BASE_URL}/api/notifications/user/${user.id}/${notificationId}/read`, {
->>>>>>> Stashed changes
         method: 'PUT'
       });
       await loadNotifications(user.id);
@@ -345,11 +320,7 @@ export default function Dashboard() {
     if (!user?.id) return;
 
     try {
-<<<<<<< Updated upstream
       await fetch(`${API_BASE_URL}/api/notifications/user/${user.id}/read-all`, {
-=======
-      await fetch(``${API_BASE_URL}/api/notifications/user/${user.id}/read-all`, {
->>>>>>> Stashed changes
         method: 'PUT'
       });
       await loadNotifications(user.id);
@@ -662,5 +633,6 @@ export default function Dashboard() {
     </>
   );
 }
+
 
 

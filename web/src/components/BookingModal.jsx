@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/BookingModal.css';
 import SuccessModal from './SuccessModal';
-<<<<<<< Updated upstream
 import { API_BASE_URL, bookingAPI, parkingSlotAPI } from '../services/apiClient';
-=======
-import { API_BASE_URL } from '../services/apiClient';
->>>>>>> Stashed changes
 
 export default function BookingModal({ isOpen, onClose, parkingSlot }) {
   const [bookingData, setBookingData] = useState({
@@ -34,11 +30,7 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
         const parkingLotId = parkingSlot.id || parkingSlot.staff_id || parkingSlot.admin_id || parkingSlot.staffID;
         
         if (parkingLotId) {
-<<<<<<< Updated upstream
           const availabilityResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${parkingLotId}/availability`);
-=======
-          const availabilityResponse = await fetch(``${API_BASE_URL}/api/parking-slots/${parkingLotId}/availability`);
->>>>>>> Stashed changes
           if (availabilityResponse.ok) {
             const availabilityData = await availabilityResponse.json();
             setParkingAvailable(availabilityData.hasAvailable);
@@ -50,11 +42,7 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
           }
         }
 
-<<<<<<< Updated upstream
         const vehicleResponse = await fetch(`${API_BASE_URL}/api/vehicles/user/${currentUser.id}`);
-=======
-        const vehicleResponse = await fetch(``${API_BASE_URL}/api/vehicles/user/${currentUser.id}`);
->>>>>>> Stashed changes
         if (vehicleResponse.ok) {
           const vehicleData = await vehicleResponse.json();
           const vehicleType = vehicleData.vehicle_type || vehicleData.vehicleType || 'Car';
@@ -154,11 +142,7 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
     console.log('Booking payload:', bookingPayload);
 
     try {
-<<<<<<< Updated upstream
       const response = await fetch(`${API_BASE_URL}/api/bookings`, {
-=======
-      const response = await fetch(\\/api/bookings', {
->>>>>>> Stashed changes
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -308,5 +292,6 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
     </div>
   );
 }
+
 
 

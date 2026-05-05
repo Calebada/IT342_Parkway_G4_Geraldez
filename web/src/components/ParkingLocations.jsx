@@ -32,11 +32,7 @@ export default function ParkingLocations() {
 
   const fetchParkingLots = async () => {
     try {
-<<<<<<< Updated upstream
       const response = await fetch(`${API_BASE_URL}/api/admin/parking-lots`);
-=======
-      const response = await fetch(\\/api/admin/parking-lots');
->>>>>>> Stashed changes
       const data = await response.json();
       
       if (response.ok && data.length > 0) {
@@ -48,11 +44,7 @@ export default function ParkingLocations() {
             console.log(`Fetching occupancy for ${lot.parking_lot_name} (admin_id: ${lotId})`);
             
             try {
-<<<<<<< Updated upstream
               const slotsResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${lotId}`);
-=======
-              const slotsResponse = await fetch(``${API_BASE_URL}/api/parking-slots/${lotId}`);
->>>>>>> Stashed changes
               if (slotsResponse.ok) {
                 const slots = await slotsResponse.json();
                 if (Array.isArray(slots)) {
@@ -187,5 +179,6 @@ export default function ParkingLocations() {
     </>
   );
 }
+
 
 

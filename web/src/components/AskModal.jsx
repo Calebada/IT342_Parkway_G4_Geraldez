@@ -37,3 +37,4 @@ const AskModal = ({ isOpen, onClose, onConfirm, title, message, isLoading }) => 
 };
 
 export default AskModal;
+

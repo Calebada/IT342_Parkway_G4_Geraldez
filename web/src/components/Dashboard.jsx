@@ -8,9 +8,11 @@ import mapImage from '../images/map.jpg';
 import smcityImg from '../images/smcity.jpg';
 import smmaboloImg from '../images/smmabolo.jpg';
 import itparkImg from '../images/itpark.jpeg';
+import { API_BASE_URL, bookingAPI, vehicleAPI } from '../services/apiClient';
 import ayalaImg from '../images/ayala.jpg';
 import emallImg from '../images/emall.jpg';
 import ConfirmationModal from './ConfirmationModal';
+import { API_BASE_URL } from '../services/apiClient';
 
 export default function Dashboard() {
   const { logout } = useAuth();
@@ -57,7 +59,7 @@ export default function Dashboard() {
 
   const loadUserBookings = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/bookings/user/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/bookings/user/${userId}`);
       if (response.ok) {
         const data = await response.json();
         
@@ -115,7 +117,7 @@ export default function Dashboard() {
     setIsDeleting(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/bookings/${bookingToDelete}`, {
+      const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +164,7 @@ export default function Dashboard() {
   const loadParkingSlots = async () => {
     try {
       console.log('📊 Loading parking lots with occupancy...');
-      const response = await fetch('http://localhost:8080/api/admin/parking-lots');
+      const response = await fetch('${API_BASE_URL}/api/admin/parking-lots');
       const data = await response.json();
       console.log('Parking lots data:', data);
       
@@ -176,7 +178,7 @@ export default function Dashboard() {
             console.log(`📊 Checking occupancy for "${lot.parking_lot_name}" (admin_id: ${lotId})`);
             
             try {
-              const slotsUrl = `http://localhost:8080/api/parking-slots/${lotId}`;
+              const slotsUrl = `${API_BASE_URL}/api/parking-slots/${lotId}`;
               console.log(`Fetching slots from: ${slotsUrl}`);
               
               const slotsResponse = await fetch(slotsUrl);
@@ -281,8 +283,8 @@ export default function Dashboard() {
 
     try {
       const [notificationsResponse, unreadResponse] = await Promise.all([
-        fetch(`http://localhost:8080/api/notifications/user/${userId}`),
-        fetch(`http://localhost:8080/api/notifications/user/${userId}/unread-count`)
+        fetch(`${API_BASE_URL}/api/notifications/user/${userId}`),
+        fetch(`${API_BASE_URL}/api/notifications/user/${userId}/unread-count`)
       ]);
 
       if (notificationsResponse.ok) {
@@ -303,7 +305,7 @@ export default function Dashboard() {
     if (!user?.id) return;
 
     try {
-      await fetch(`http://localhost:8080/api/notifications/user/${user.id}/${notificationId}/read`, {
+      await fetch(`${API_BASE_URL}/api/notifications/user/${user.id}/${notificationId}/read`, {
         method: 'PUT'
       });
       await loadNotifications(user.id);
@@ -318,7 +320,7 @@ export default function Dashboard() {
     if (!user?.id) return;
 
     try {
-      await fetch(`http://localhost:8080/api/notifications/user/${user.id}/read-all`, {
+      await fetch(`${API_BASE_URL}/api/notifications/user/${user.id}/read-all`, {
         method: 'PUT'
       });
       await loadNotifications(user.id);
@@ -631,3 +633,6 @@ export default function Dashboard() {
     </>
   );
 }
+
+
+

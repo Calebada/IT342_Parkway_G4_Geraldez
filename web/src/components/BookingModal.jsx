@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/BookingModal.css';
 import SuccessModal from './SuccessModal';
+import { API_BASE_URL, bookingAPI, parkingSlotAPI } from '../services/apiClient';
 
 export default function BookingModal({ isOpen, onClose, parkingSlot }) {
   const [bookingData, setBookingData] = useState({
@@ -29,7 +30,7 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
         const parkingLotId = parkingSlot.id || parkingSlot.staff_id || parkingSlot.admin_id || parkingSlot.staffID;
         
         if (parkingLotId) {
-          const availabilityResponse = await fetch(`http://localhost:8080/api/parking-slots/${parkingLotId}/availability`);
+          const availabilityResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${parkingLotId}/availability`);
           if (availabilityResponse.ok) {
             const availabilityData = await availabilityResponse.json();
             setParkingAvailable(availabilityData.hasAvailable);
@@ -41,7 +42,7 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
           }
         }
 
-        const vehicleResponse = await fetch(`http://localhost:8080/api/vehicles/user/${currentUser.id}`);
+        const vehicleResponse = await fetch(`${API_BASE_URL}/api/vehicles/user/${currentUser.id}`);
         if (vehicleResponse.ok) {
           const vehicleData = await vehicleResponse.json();
           const vehicleType = vehicleData.vehicle_type || vehicleData.vehicleType || 'Car';
@@ -141,7 +142,7 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
     console.log('Booking payload:', bookingPayload);
 
     try {
-      const response = await fetch('http://localhost:8080/api/bookings', {
+      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -291,3 +292,6 @@ export default function BookingModal({ isOpen, onClose, parkingSlot }) {
     </div>
   );
 }
+
+
+

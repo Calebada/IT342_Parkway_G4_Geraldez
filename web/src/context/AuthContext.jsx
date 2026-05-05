@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
+import { authAPI, API_BASE_URL } from '../services/apiClient';
 
 const AuthContext = createContext();
 
@@ -9,22 +10,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:8080/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return { success: false, message: data.message || 'Invalid email or password' };
-      }
+      const data = await authAPI.login(email, password);
 
   
       const userObj = {
@@ -49,28 +35,19 @@ export function AuthProvider({ children }) {
   const register = async (userData) => {
     console.log('Registering user:', userData);
     try {
-      const response = await fetch('http://localhost:8080/api/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstname: userData.firstname,
-          lastname: userData.lastname,
-          email: userData.email,
-          password: userData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return { success: false, message: data.message || 'Registration failed' };
-      }
+      const data = await authAPI.register(
+        userData.firstname,
+        userData.lastname,
+        userData.email,
+        userData.password
+      );
 
       return { success: true, message: 'Registration successful' };
     } catch (error) {
-      return { success: false, message: 'Network error. Please try again.' };
+      const message = error.message === 'Session expired. Please login again.' 
+        ? 'Registration failed' 
+        : error.message || 'Network error. Please try again.';
+      return { success: false, message };
     }
   };
 
@@ -119,7 +96,7 @@ export function AuthProvider({ children }) {
     console.log('Request body being sent:', requestBody);
     
     try {
-      const response = await fetch('http://localhost:8080/api/admins', {
+      const response = await fetch(`${API_BASE_URL}/api/admins`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,3 +139,6 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
+
+

@@ -1,7 +1,9 @@
 import React, { createContext, useState, useContext } from 'react';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 const AuthContext = createContext();
+
+// API Base URL with fallback
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -10,7 +12,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('\/api/users/login', {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +52,7 @@ export function AuthProvider({ children }) {
   const register = async (userData) => {
     console.log('Registering user:', userData);
     try {
-      const response = await fetch('\/api/users/register', {
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -120,7 +122,7 @@ export function AuthProvider({ children }) {
     console.log('Request body being sent:', requestBody);
     
     try {
-      const response = await fetch('\/api/admins', {
+      const response = await fetch(`${API_BASE_URL}/api/admins`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

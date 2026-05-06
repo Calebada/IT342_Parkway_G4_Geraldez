@@ -79,7 +79,7 @@ function Login() {
 
                 {/* Google Login Button */}
                 <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                    <a href="\${API_BASE_URL}/oauth2/authorization/google" style={{ textDecoration: 'none' }}>
+                    <a href={`${process.env.REACT_APP_API_URL}/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
                         <button
                             type="button"
                             style={{

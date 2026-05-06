@@ -103,4 +103,23 @@ public class UserService {
         
         return user;
     }
+    
+    // Save OAuth2 User without password hashing
+    public User saveOAuth2User(User user) {
+        // Check if user already exists by email
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser.isPresent()) {
+            return existingUser.get();
+        }
+        
+        // Set defaults for OAuth2 users
+        user.setPassword(""); // OAuth2 users don't have passwords
+        user.setAuthProvider("oauth2");
+        
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("user");
+        }
+        
+        return userRepository.save(user);
+    }
 }

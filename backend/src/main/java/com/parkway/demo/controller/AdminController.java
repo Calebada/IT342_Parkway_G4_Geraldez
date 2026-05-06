@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admins")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "${FRONTEND_URL:http://localhost:3000}", allowCredentials = "true")
 public class AdminController {
     
     @Autowired

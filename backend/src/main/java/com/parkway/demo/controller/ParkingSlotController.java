@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/parking-slots")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "${FRONTEND_URL:http://localhost:3000}", allowCredentials = "true")
 public class ParkingSlotController {
     
     private static final Logger logger = LoggerFactory.getLogger(ParkingSlotController.class);

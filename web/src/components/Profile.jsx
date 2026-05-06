@@ -124,11 +124,11 @@ export default function Profile() {
 
     try {
       console.log('Attempting to change password for user:', user.id);
-      console.log('API endpoint:', `http://localhost:8080/api/users/${user.id}/password`);
+      console.log('API endpoint:', `${API_BASE_URL}/api/users/${user.id}/password`);
       
       // First, verify current password by attempting login
       console.log('Step 1: Verifying current password...');
-      const loginResponse = await fetch('\/api/users/login', {
+      const loginResponse = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -147,7 +147,7 @@ export default function Profile() {
       
       // Now update the password in backend
       console.log('Step 2: Updating password in database...');
-      const updateResponse = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+      const updateResponse = await fetch(`${API_BASE_URL}/api/users/${user.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

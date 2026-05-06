@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -22,6 +23,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${app.frontend-url:http://localhost:3000}")
+    private String frontendUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -37,7 +41,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             
             // Build redirect URL with user info as URL parameters
             String redirectUrl = String.format(
-                "http://localhost:3000/oauth-callback?userId=%d&email=%s&firstname=%s&lastname=%s&role=%s",
+                "%s/oauth-callback?userId=%d&email=%s&firstname=%s&lastname=%s&role=%s",
+                frontendUrl,
                 user.getUserID(),
                 URLEncoder.encode(user.getEmail() != null ? user.getEmail() : "", StandardCharsets.UTF_8),
                 URLEncoder.encode(user.getFirstname() != null ? user.getFirstname() : "", StandardCharsets.UTF_8),
@@ -48,7 +53,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             getRedirectStrategy().sendRedirect(request, response, redirectUrl);
         } else {
             // Fallback redirect if user not found (shouldn't happen)
-            getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000/login?error=user_not_found");
+            getRedirectStrategy().sendRedirect(request, response, frontendUrl + "/login?error=user_not_found");
         }
     }
 }

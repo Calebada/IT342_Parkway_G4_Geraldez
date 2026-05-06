@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { BsBusFrontFill } from 'react-icons/bs';
 import '../../styles/LoginRegister.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 function Login() {
     const navigate = useNavigate();
@@ -79,7 +79,7 @@ function Login() {
 
                 {/* Google Login Button */}
                 <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                    <a href={`${process.env.REACT_APP_API_URL}/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
+                    <a href={`${import.meta.env.VITE_API_URL}/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
                         <button
                             type="button"
                             style={{

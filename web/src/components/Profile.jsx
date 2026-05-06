@@ -3,7 +3,7 @@ import '../styles/Profile.css';
 import { useNavigate } from 'react-router-dom';
 import { BsBusFrontFill } from "react-icons/bs";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export default function Profile() {
    const navigate = useNavigate();

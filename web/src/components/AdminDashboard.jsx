@@ -7,7 +7,7 @@ import ConfirmationModal from './ConfirmationModal';
 import AskModal from './AskModal';
 import SuccessModal from './SuccessModal';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export default function AdminDashboard() {
   const { logout } = useAuth();

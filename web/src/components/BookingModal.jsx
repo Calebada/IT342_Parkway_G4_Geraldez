@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/BookingModal.css';
 import SuccessModal from './SuccessModal';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export default function BookingModal({ isOpen, onClose, parkingSlot }) {
   const [bookingData, setBookingData] = useState({

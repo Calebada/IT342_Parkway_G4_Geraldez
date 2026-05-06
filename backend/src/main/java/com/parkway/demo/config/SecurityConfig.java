@@ -15,18 +15,21 @@ public class SecurityConfig {
     @Autowired(required = false)
     private ClientRegistrationRepository clientRegistrationRepository;
 
+    @Autowired(required = false)
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        String frontendUrl = System.getenv("FRONTEND_URL") != null ? 
+        String frontendUrl = System.getenv("FRONTEND_URL") != null ?
             System.getenv("FRONTEND_URL") : "http://localhost:3000";
-        
+
         List<String> allowedOrigins = List.of(
-            "http://localhost:3000", 
-            "http://localhost:3001", 
+            "http://localhost:3000",
+            "http://localhost:3001",
             "http://127.0.0.1:3000",
             frontendUrl
         );
-        
+
         http
             .cors(cors -> cors.configurationSource(request -> {
                 var corsConfig = new org.springframework.web.cors.CorsConfiguration();
@@ -43,9 +46,9 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             );
 
-        if (clientRegistrationRepository != null) {
+        if (clientRegistrationRepository != null && oAuth2LoginSuccessHandler != null) {
             http.oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl(frontendUrl + "/dashboard", true)
+                .successHandler(oAuth2LoginSuccessHandler)
                 .failureUrl(frontendUrl + "/login?error=true")
             );
         }

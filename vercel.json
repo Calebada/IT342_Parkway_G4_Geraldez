@@ -2,7 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "web/build",
   "env": {
-    "REACT_APP_API_URL": "@react_app_api_url"
+    "REACT_APP_API_URL": "https://it342-parkway-g4-geraldez.onrender.com"
   },
   "rewrites": [
     {

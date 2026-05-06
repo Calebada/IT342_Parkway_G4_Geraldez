@@ -1,33 +1,21 @@
 package com.parkway.demo.config;
 
 import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.parkway.demo.service.CustomOAuth2UserService;
 
 @Configuration
 public class SecurityConfig {
-
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
-    
-    @Autowired
-    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    // Allow both local development and production URLs
-                    corsConfig.setAllowedOrigins(List.of(
-                        "http://localhost:3000",
-                        "http://localhost:3001",
-                        System.getenv("FRONTEND_URL") != null ? System.getenv("FRONTEND_URL") : "https://parkway.onrender.com"
-                    ));
+                    corsConfig.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001"));
                     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfig.setAllowedHeaders(List.of("*"));
                     corsConfig.setExposedHeaders(List.of("*"));
@@ -38,14 +26,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/login", "/api/users/register").permitAll()
-                        .requestMatchers("/login/**", "/oauth2/**").permitAll()
-                        .anyRequest().permitAll() // Allow all for now, tighten later
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2LoginSuccessHandler)
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

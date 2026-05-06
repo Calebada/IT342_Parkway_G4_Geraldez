@@ -7,6 +7,8 @@ import ConfirmationModal from './ConfirmationModal';
 import AskModal from './AskModal';
 import SuccessModal from './SuccessModal';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 export default function AdminDashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -103,13 +105,13 @@ export default function AdminDashboard() {
     if (currentUser.parkingLotId) {
       console.log('✓ Using stored parking lot ID:', currentUser.parkingLotId);
       try {
-        const response = await fetch(`http://localhost:8080/api/admins/${currentUser.parkingLotId}`);
+        const response = await fetch(`${API_BASE_URL}/api/admins/${currentUser.parkingLotId}`);
         if (response.ok) {
           const lot = await response.json();
           
           let bookedCount = 0;
           try {
-            const slotsResponse = await fetch(`http://localhost:8080/api/parking-slots/${currentUser.parkingLotId}`);
+            const slotsResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${currentUser.parkingLotId}`);
             if (slotsResponse.ok) {
               const slots = await slotsResponse.json();
               bookedCount = slots.filter(s => (s.status || '').toLowerCase() === 'occupied' || s.reserved === true).length;
@@ -143,12 +145,12 @@ export default function AdminDashboard() {
 
     try {
       console.log('Using email-based lookup to avoid backend ID bug');
-      let response = await fetch(`http://localhost:8080/api/admins/email/${encodeURIComponent(currentUser.email)}`);
+      let response = await fetch(`${API_BASE_URL}/api/admins/email/${encodeURIComponent(currentUser.email)}`);
       console.log('Email-based lookup response status:', response.status);
       
       if (!response.ok && response.status === 404) {
         console.log('Email lookup failed, trying Method 2: Get all parking lots');
-        response = await fetch('\/api/admin/parking-lots');
+        response = await fetch(`${API_BASE_URL}/api/admin/parking-lots`);
         console.log('Method 2 - Get all lots response status:', response.status);
         
         if (response.ok) {
@@ -170,7 +172,7 @@ export default function AdminDashboard() {
             
             let bookedCount = 0;
             try {
-              const slotsResponse = await fetch(`http://localhost:8080/api/parking-slots/${lotId}`);
+              const slotsResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${lotId}`);
               if (slotsResponse.ok) {
                 const slots = await slotsResponse.json();
                 bookedCount = slots.filter(s => (s.status || '').toLowerCase() === 'occupied' || s.reserved === true).length;
@@ -223,7 +225,7 @@ export default function AdminDashboard() {
         
         let bookedCount = 0;
         try {
-          const slotsResponse = await fetch(`http://localhost:8080/api/parking-slots/${lotId}`);
+          const slotsResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${lotId}`);
           if (slotsResponse.ok) {
             const slots = await slotsResponse.json();
             bookedCount = slots.filter(s => (s.status || '').toLowerCase() === 'occupied' || s.reserved === true).length;
@@ -277,7 +279,7 @@ export default function AdminDashboard() {
         console.log('Using stored parking lot ID for bookings:', parkingLotId);
       } else {
         console.log('Using email-based lookup to get parking lot ID');
-        let response = await fetch(`http://localhost:8080/api/admins/email/${encodeURIComponent(currentUser.email)}`);
+        let response = await fetch(`${API_BASE_URL}/api/admins/email/${encodeURIComponent(currentUser.email)}`);
         console.log('Fetch admin by email response status:', response.status);
         
         if (response.status === 404) {
@@ -312,7 +314,7 @@ export default function AdminDashboard() {
       syncAdminParkingLotId(parkingLotId);
       
       console.log('Fetching bookings for parking lot ID:', parkingLotId);
-      const bookingsResponse = await fetch(`http://localhost:8080/api/bookings/admin/${parkingLotId}`);
+      const bookingsResponse = await fetch(`${API_BASE_URL}/api/bookings/admin/${parkingLotId}`);
       console.log('Bookings response status:', bookingsResponse.status);
       
       if (bookingsResponse.ok) {
@@ -324,7 +326,7 @@ export default function AdminDashboard() {
           data.map(async (booking) => {
             if (booking.user_id) {
               try {
-                const vehicleResponse = await fetch(`http://localhost:8080/api/vehicles/user/${booking.user_id}`);
+                const vehicleResponse = await fetch(`${API_BASE_URL}/api/vehicles/user/${booking.user_id}`);
                 if (vehicleResponse.ok) {
                   const vehicle = await vehicleResponse.json();
                   return {
@@ -374,8 +376,8 @@ export default function AdminDashboard() {
 
     try {
       const [notificationsResponse, unreadResponse] = await Promise.all([
-        fetch(`http://localhost:8080/api/notifications/admin/${recipientId}`),
-        fetch(`http://localhost:8080/api/notifications/admin/${recipientId}/unread-count`)
+        fetch(`${API_BASE_URL}/api/notifications/admin/${recipientId}`),
+        fetch(`${API_BASE_URL}/api/notifications/admin/${recipientId}/unread-count`)
       ]);
 
       if (notificationsResponse.ok) {
@@ -397,7 +399,7 @@ export default function AdminDashboard() {
     if (!adminRecipientId) return;
 
     try {
-      await fetch(`http://localhost:8080/api/notifications/admin/${adminRecipientId}/${notificationId}/read`, {
+      await fetch(`${API_BASE_URL}/api/notifications/admin/${adminRecipientId}/${notificationId}/read`, {
         method: 'PUT'
       });
       await loadNotifications(adminRecipientId);
@@ -414,7 +416,7 @@ export default function AdminDashboard() {
     if (!adminRecipientId) return;
 
     try {
-      await fetch(`http://localhost:8080/api/notifications/admin/${adminRecipientId}/read-all`, {
+      await fetch(`${API_BASE_URL}/api/notifications/admin/${adminRecipientId}/read-all`, {
         method: 'PUT'
       });
       await loadNotifications(adminRecipientId);
@@ -460,7 +462,7 @@ export default function AdminDashboard() {
   const loadLocationSlotStatuses = async (locationId) => {
     try {
       console.log('=== Loading slots for location:', locationId, '===');
-      const response = await fetch(`http://localhost:8080/api/parking-slots/${locationId}`);
+      const response = await fetch(`${API_BASE_URL}/api/parking-slots/${locationId}`);
       if (response.ok) {
         const slots = await response.json();
         console.log('✓ Slots from API:', slots);
@@ -478,7 +480,7 @@ export default function AdminDashboard() {
           const initialized = await initializeParkingSlots(locationId, capacity);
           
           if (initialized) {
-            const retryResponse = await fetch(`http://localhost:8080/api/parking-slots/${locationId}`);
+            const retryResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${locationId}`);
             if (retryResponse.ok) {
               const newSlots = await retryResponse.json();
               if (newSlots && newSlots.length > 0) {
@@ -587,7 +589,7 @@ export default function AdminDashboard() {
       const newStatus = slot.reserved ? 'vacant' : 'occupied';
       console.log(`Toggling slot ${slotNumber} (ID: ${slot.slotId}) from ${slot.reserved ? 'occupied' : 'vacant'} to ${newStatus}`);
       
-      const response = await fetch(`http://localhost:8080/api/parking-slots/${slot.slotId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/parking-slots/${slot.slotId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -646,7 +648,7 @@ export default function AdminDashboard() {
       console.log('Edit Data:', editData);
       
       try {
-        const response = await fetch(`http://localhost:8080/api/users/${adminUser.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/users/${adminUser.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -676,13 +678,13 @@ export default function AdminDashboard() {
         let updateSuccess = false;
         
         try {
-          const getParkingLotResponse = await fetch(`http://localhost:8080/api/admins/${adminUser.parkingLotId}`);
+          const getParkingLotResponse = await fetch(`${API_BASE_URL}/api/admins/${adminUser.parkingLotId}`);
           
           if (getParkingLotResponse.ok) {
             const parkingLotData = await getParkingLotResponse.json();
             console.log('Current parking lot data:', parkingLotData);
             
-            const capacityResponse = await fetch(`http://localhost:8080/api/admins/${adminUser.parkingLotId}`, {
+            const capacityResponse = await fetch(`${API_BASE_URL}/api/admins/${adminUser.parkingLotId}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -720,7 +722,7 @@ export default function AdminDashboard() {
                 console.log('Found parking lot in all lots:', currentLot);
                 const lotId = currentLot.admin_id || currentLot.staffID || currentLot.staff_id || currentLot.id;
                 
-                const updateResponse = await fetch(`http://localhost:8080/api/admin/parking-lots/${lotId}`, {
+                const updateResponse = await fetch(`${API_BASE_URL}/api/admin/parking-lots/${lotId}`, {
                   method: 'PUT',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
@@ -758,7 +760,7 @@ export default function AdminDashboard() {
         console.log('Syncing parking slots to new capacity:', newCapacity);
         
         try {
-          const slotsResponse = await fetch(`http://localhost:8080/api/parking-slots/${adminUser.parkingLotId}`);
+          const slotsResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${adminUser.parkingLotId}`);
           
           if (slotsResponse.ok) {
             const existingSlots = await slotsResponse.json();
@@ -834,7 +836,7 @@ export default function AdminDashboard() {
               for (const slot of slotsToRemove) {
                 try {
                   const slotId = slot.slot_id || slot.slotId;
-                  const deleteResponse = await fetch(`http://localhost:8080/api/parking-slots/${slotId}`, {
+                  const deleteResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${slotId}`, {
                     method: 'DELETE'
                   });
                   
@@ -953,7 +955,7 @@ export default function AdminDashboard() {
         return;
       }
 
-      const updateResponse = await fetch(`http://localhost:8080/api/users/${adminUser.id}`, {
+      const updateResponse = await fetch(`${API_BASE_URL}/api/users/${adminUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -1003,7 +1005,7 @@ export default function AdminDashboard() {
         return;
       }
 
-      const confirmResponse = await fetch(`http://localhost:8080/api/bookings/${bookingId}/confirm`, {
+      const confirmResponse = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}/confirm`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -1059,7 +1061,7 @@ export default function AdminDashboard() {
     try {
       const booking = bookings.find(b => (b.booking_id || b.id) === bookingId);
       
-      const response = await fetch(`http://localhost:8080/api/bookings/${bookingId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -1084,13 +1086,13 @@ export default function AdminDashboard() {
         if (loc) {
           try {
             // Get all occupied slots and free the first one
-            const slotsResponse = await fetch(`http://localhost:8080/api/parking-slots/${loc.id}`);
+            const slotsResponse = await fetch(`${API_BASE_URL}/api/parking-slots/${loc.id}`);
             if (slotsResponse.ok) {
               const slots = await slotsResponse.json();
               const occupiedSlot = slots.find(s => s.status === 'occupied');
               
               if (occupiedSlot) {
-                await fetch(`http://localhost:8080/api/parking-slots/${occupiedSlot.slot_id}`, {
+                await fetch(`${API_BASE_URL}/api/parking-slots/${occupiedSlot.slot_id}`, {
                   method: 'PUT',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ status: 'vacant' }),

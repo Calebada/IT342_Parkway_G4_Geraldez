@@ -12,7 +12,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Get frontend URL from environment variable or use defaults
         String frontendUrl = System.getenv("FRONTEND_URL") != null ? 
             System.getenv("FRONTEND_URL") : "http://localhost:3000";
         
@@ -24,21 +23,24 @@ public class SecurityConfig {
         );
         
         http
-                .cors(cors -> cors.configurationSource(request -> {
-                    var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.setAllowedOrigins(allowedOrigins);
-                    corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfig.setAllowedHeaders(List.of("*"));
-                    corsConfig.setExposedHeaders(List.of("*"));
-                    corsConfig.setAllowCredentials(false);
-                    corsConfig.setMaxAge(3600L);
-                    return corsConfig;
-                }))
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**", "/public/**").permitAll()
-                        .anyRequest().permitAll()
-                );
+            .cors(cors -> cors.configurationSource(request -> {
+                var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                corsConfig.setAllowedOrigins(allowedOrigins);
+                corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                corsConfig.setAllowedHeaders(List.of("*"));
+                corsConfig.setAllowCredentials(true);
+                corsConfig.setMaxAge(3600L);
+                return corsConfig;
+            }))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/**", "/public/**").permitAll()
+                .anyRequest().permitAll()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .defaultSuccessUrl(frontendUrl + "/dashboard", true)
+                .failureUrl(frontendUrl + "/login?error=true")
+            );
 
         return http.build();
     }
